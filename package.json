@@ -1,0 +1,27 @@
+{
+  "name": "quick-api",
+  "version": "1.0.0",
+  "description": "Instant Payment Service passthrough API built with Express",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "instant-payments",
+    "express",
+    "iso20022"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
