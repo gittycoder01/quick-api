@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Message>
+  <AppHdr>
+    <head:Fr>
+      <head:FIId>
+        <head:FinInstnID>
+          <head:BICFI>BANKPHMMXXX</head:BICFI>
+        </head:FinInstnID>
+      </head:FIId>
+    </head:Fr>
+    <head:To>
+      <head:FIId>
+        <head:FinInstnID>
+          <head:BICFI>IPSNPHMXXXXX</head:BICFI>
+        </head:FinInstnID>
+      </head:FIId>
+    </head:To>
+    <head:BizMsgIdr>MSG202405010002</head:BizMsgIdr>
+    <head:MsgDefIdr>admn.005.001.01</head:MsgDefIdr>
+    <head:CreDt>2024-05-01T08:47:00Z</head:CreDt>
+    <head:CpyDplct>CODU</head:CpyDplct>
+    <head:Sgntr>
+      <Signature>
+        <SignedInfo>
+          <CanonicalizationMethod _Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+          <SignatureMethod _Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" />
+          <Reference>
+            <Transforms>
+              <Transform _Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+            </Transforms>
+            <DigestMethod _Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
+            <DigestValue>FAKEHASH==</DigestValue>
+          </Reference>
+        </SignedInfo>
+        <SignatureValue>BASE64SIGNATURE==</SignatureValue>
+        <KeyInfo>
+          <X509Data>
+            <X509SubjectName>CN=InstantPaymentClient</X509SubjectName>
+            <X509IssuerSerial>
+              <X509IssuerName>CN=InstantPaymentCA</X509IssuerName>
+              <X509SerialNumber>123456789</X509SerialNumber>
+            </X509IssuerSerial>
+          </X509Data>
+        </KeyInfo>
+      </Signature>
+    </head:Sgntr>
+  </AppHdr>
+  <EchoRequest>
+    <er:AdmnEchoRequest>
+      <er:GrpHdr>
+        <er:MsgId>MSG202405010002</er:MsgId>
+        <er:CreDtTm>2024-05-01T08:47:00Z</er:CreDtTm>
+      </er:GrpHdr>
+      <er:EchoTxInf>
+        <er:FnctnCd>ECHO</er:FnctnCd>
+        <er:InstrId>HEALTHCHECK123</er:InstrId>
+        <er:InstgAgt>
+          <er:FinInstnId>
+            <er:BIC>BANKPHMMXXX</er:BIC>
+          </er:FinInstnId>
+        </er:InstgAgt>
+        <er:InstdAgt>
+          <er:FinInstnId>
+            <er:BIC>IPSNPHMXXXXX</er:BIC>
+          </er:FinInstnId>
+        </er:InstdAgt>
+      </er:EchoTxInf>
+    </er:AdmnEchoRequest>
+  </EchoRequest>
+</Message>

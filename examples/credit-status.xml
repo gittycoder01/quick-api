@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Message>
+  <AppHdr>
+    <head:Fr>
+      <head:FIId>
+        <head:FinInstnID>
+          <head:BICFI>IPSNPHMXXXXX</head:BICFI>
+        </head:FinInstnID>
+      </head:FIId>
+    </head:Fr>
+    <head:To>
+      <head:FIId>
+        <head:FinInstnID>
+          <head:BICFI>BANKPHMMXXX</head:BICFI>
+        </head:FinInstnID>
+      </head:FIId>
+    </head:To>
+    <head:BizMsgIdr>MSG202405010003</head:BizMsgIdr>
+    <head:MsgDefIdr>pacs.002.001.12</head:MsgDefIdr>
+    <head:CreDt>2024-05-01T08:55:00Z</head:CreDt>
+    <head:CpyDplct>CODU</head:CpyDplct>
+    <head:Sgntr>
+      <Signature>
+        <SignedInfo>
+          <CanonicalizationMethod _Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+          <SignatureMethod _Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" />
+          <Reference>
+            <Transforms>
+              <Transform _Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+            </Transforms>
+            <DigestMethod _Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
+            <DigestValue>FAKEHASH==</DigestValue>
+          </Reference>
+        </SignedInfo>
+        <SignatureValue>BASE64SIGNATURE==</SignatureValue>
+        <KeyInfo>
+          <X509Data>
+            <X509SubjectName>CN=InstantPaymentSwitch</X509SubjectName>
+            <X509IssuerSerial>
+              <X509IssuerName>CN=InstantPaymentCA</X509IssuerName>
+              <X509SerialNumber>987654321</X509SerialNumber>
+            </X509IssuerSerial>
+          </X509Data>
+        </KeyInfo>
+      </Signature>
+    </head:Sgntr>
+  </AppHdr>
+  <MessageStatusReport>
+    <ps:FIToFIPmtStsRpt>
+      <ps:GrpHdr>
+        <ps:MsgId>MSG202405010003</ps:MsgId>
+        <ps:CreDtTm>2024-05-01T08:55:00Z</ps:CreDtTm>
+      </ps:GrpHdr>
+      <ps:OrgnlGrpInfAndSts>
+        <ps:OrgnlMsgId>MSG202405010001</ps:OrgnlMsgId>
+        <ps:OrgnlMsgNmId>pacs.008.001.08</ps:OrgnlMsgNmId>
+        <ps:OrgnlCreDtTm>2024-05-01T08:45:00Z</ps:OrgnlCreDtTm>
+        <ps:OrgnlNbOfTxs>1</ps:OrgnlNbOfTxs>
+      </ps:OrgnlGrpInfAndSts>
+      <ps:TxInfAndSts>
+        <ps:OrgnlInstrId>INSTR123456</ps:OrgnlInstrId>
+        <ps:TxSts>ACSP</ps:TxSts>
+        <ps:AccptncDtTm>2024-05-01T08:50:00Z</ps:AccptncDtTm>
+        <ps:InstgAgt>
+          <er:FinInstnId>
+            <er:BIC>BANKPHMMXXX</er:BIC>
+          </er:FinInstnId>
+        </ps:InstgAgt>
+        <ps:InstdAgt>
+          <er:FinInstnId>
+            <er:BIC>IPSNPHMXXXXX</er:BIC>
+          </er:FinInstnId>
+        </ps:InstdAgt>
+        <ps:OrgnlTxRef>
+          <ps:IntrBkSttlmAmt>1000.00</ps:IntrBkSttlmAmt>
+        </ps:OrgnlTxRef>
+      </ps:TxInfAndSts>
+    </ps:FIToFIPmtStsRpt>
+  </MessageStatusReport>
+</Message>

@@ -1,0 +1,830 @@
+openapi: 3.0.0
+info:
+  title: Instant Payment Service - Send
+  version: 0.0.6
+  description: Instant Payment Service RESTful API Definitions -
+  contact:
+    name: xxx yyyyy
+    email: xxxx.yyyyy@mastercard.com
+    url: http://apigee.landbank.com
+paths:
+  /ips-payments/service-requests:
+    post:
+      tags:
+        - Sending API
+      summary: New payment or non-payment instruction BN-service-requests
+      description: >-
+        New payment or non-payment instruction. The request represents a Leg 2
+        message and the response represents the Leg 3 message.
+      operationId: serviceRequest
+      requestBody:
+        required: true
+        description: >-
+          An ISO20022 message with an admn.001 or admn.003 message as the
+          payload, depending on whether the call is to sign on or to sign off.
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/MessageReq008'
+      responses:
+        '200':
+          description: >-
+            Successful operation. Returns an ISO20022 message with an admn.002 or
+            an admn.004 message as the payload, depending on whether the call is
+            to sign on or to sign off.
+        '400':
+          description: >-
+            Structural error or rejection. Returns an ISO20022 message with
+            either an admi.002 for structural failures or admn.002 or admmn.004
+            message for rejections.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Serious system error.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ips-payments/health-checks:
+    put:
+      tags:
+        - Sending API
+      summary: Health Check BN-health-checks
+      description: >-
+        Check the health of the IPS connection utilising the admin echo
+        messages
+      operationId: healthCheck
+      requestBody:
+        required: true
+        description: An ISO20022 message with an admn.005 message as the payload.
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/MessageReq005'
+      responses:
+        '200':
+          description: >-
+            Successful operation. Returns an ISO20022 message with an admn.006
+            message as the payload.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MessageRes006'
+        '400':
+          description: >-
+            Structural validation error. Returns an ISO20022 message with an
+            admi.002 message as the payload.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '500':
+          description: Serious system error.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /credit-status:
+    put:
+      tags:
+        - Sending API
+      summary: Payment or non-payment instruction response BN-service-responses
+      description: This represents the leg 4 response from the Central Infrastructure.
+      operationId: serviceResponse
+      requestBody:
+        required: true
+        description: An ISO20022 message with a pacs.002 message as the payload.
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/MessageReq002'
+      responses:
+        '202':
+          description: >-
+            Successful operation. The Central Infrastructure will return this in
+            response to a leg 1 request to indicate that it has successfully
+            received the message. This does not imply that the message will not
+            subsequently fail.
+        '400':
+          description: >-
+            Structural validation error. Returns an ISO20022 message with an
+            admi.002 message as the payload.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '500':
+          description: Serious system error.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Message:
+      type: object
+      description: >-
+        A complete ISO20022 message. The actual payload depends on the specifics
+        of the end-point in use.
+      properties:
+        AppHdr:
+          $ref: '#/components/schemas/AppHdr'
+    MessageReq005:
+      xml:
+        name: Message
+      type: object
+      description: >-
+        A complete ISO20022 message. The actual payload depends on the specifics
+        of the end-point in use.
+      properties:
+        AppHdr:
+          $ref: '#/components/schemas/AppHdr'
+        EchoRequest:
+          $ref: '#/components/schemas/EchoRequest'
+    MessageRes006:
+      xml:
+        name: Message
+      type: object
+      description: >-
+        A complete ISO20022 message. The actual payload depends on the specifics
+        of the end-point in use.
+      properties:
+        AppHdr:
+          $ref: '#/components/schemas/AppHdr'
+        EchoResponse:
+          $ref: '#/components/schemas/EchoRequest'
+    MessageReq008:
+      xml:
+        name: Message
+      type: object
+      description: >-
+        A complete ISO20022 message. The actual payload depends on the specifics
+        of the end-point in use.
+      properties:
+        AppHdr:
+          $ref: '#/components/schemas/AppHdr'
+        CreditTransfer:
+          $ref: '#/components/schemas/CreditTransfer'
+    MessageReq002:
+      xml:
+        name: Message
+      type: object
+      description: >-
+        A complete ISO20022 message. The actual payload depends on the specifics
+        of the end-point in use.
+      properties:
+        AppHdr:
+          $ref: '#/components/schemas/AppHdr'
+        MessageStatusReport:
+          $ref: '#/components/schemas/MessageStatusReport'
+    Error:
+      type: object
+      required:
+        - Errors
+      properties:
+        Errors:
+          type: object
+          required:
+            - Error
+          properties:
+            Error:
+              type: array
+              items:
+                type: object
+                properties:
+                  Source:
+                    type: string
+                  ReasonCode:
+                    type: string
+                  Description:
+                    type: string
+                  Recoverable:
+                    type: boolean
+                  Details:
+                    type: string
+    AppHdr:
+      type: object
+      additionalProperties: false
+      properties:
+        head:Fr:
+          $ref: '#/components/schemas/Fr'
+        head:To:
+          $ref: '#/components/schemas/Fr'
+        head:BizMsgIdr:
+          $ref: '#/components/schemas/BizMsgIdr'
+        head:MsgDefIdr:
+          $ref: '#/components/schemas/BizMsgIdr'
+        head:CreDt:
+          $ref: '#/components/schemas/BizMsgIdr'
+        head:CpyDplct:
+          $ref: '#/components/schemas/BizMsgIdr'
+        head:Sgntr:
+          $ref: '#/components/schemas/Sgntr'
+      required:
+        - BizMsgIdr
+        - CpyDplct
+        - CreDt
+        - Fr
+        - MsgDefIdr
+        - Sgntr
+        - To
+      title: AppHdr
+    BizMsgIdr:
+      type: string
+      title: BizMsgIdr
+    Fr:
+      type: object
+      additionalProperties: false
+      properties:
+        head:FIId:
+          $ref: '#/components/schemas/FIID'
+      required:
+        - FIId
+      title: Fr
+    FIID:
+      type: object
+      additionalProperties: false
+      properties:
+        head:FinInstnID:
+          type: object
+          additionalProperties: false
+          properties:
+            head:BICFI:
+              type: string
+          required:
+            - BICFI
+          title: FinInstnID
+      required:
+        - FinInstnId
+      title: FIID
+    Sgntr:
+      type: object
+      additionalProperties: false
+      properties:
+        Signature:
+          $ref: '#/components/schemas/Signature'
+      required:
+        - Signature
+      title: Sgntr
+    Signature:
+      type: object
+      additionalProperties: false
+      properties:
+        SignedInfo:
+          $ref: '#/components/schemas/SignedInfo'
+        SignatureValue:
+          type: string
+        KeyInfo:
+          $ref: '#/components/schemas/KeyInfo'
+      required:
+        - KeyInfo
+        - SignatureValue
+        - SignedInfo
+        - _xmlns
+      title: Signature
+    KeyInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        X509Data:
+          $ref: '#/components/schemas/X509Data'
+      required:
+        - X509Data
+      title: KeyInfo
+    X509Data:
+      type: object
+      additionalProperties: false
+      properties:
+        X509SubjectName:
+          type: string
+        X509IssuerSerial:
+          $ref: '#/components/schemas/X509IssuerSerial'
+      required:
+        - X509IssuerSerial
+        - X509SubjectName
+      title: X509Data
+    X509IssuerSerial:
+      type: object
+      additionalProperties: false
+      properties:
+        X509IssuerName:
+          type: string
+        X509SerialNumber:
+          type: string
+      required:
+        - X509IssuerName
+        - X509SerialNumber
+      title: X509IssuerSerial
+    SignedInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        CanonicalizationMethod:
+          $ref: '#/components/schemas/CanonicalizationMethod'
+        SignatureMethod:
+          $ref: '#/components/schemas/CanonicalizationMethod'
+        Reference:
+          $ref: '#/components/schemas/Reference'
+      required:
+        - CanonicalizationMethod
+        - Reference
+        - SignatureMethod
+      title: SignedInfo
+    Reference:
+      type: object
+      additionalProperties: false
+      properties:
+        Transforms:
+          $ref: '#/components/schemas/Transforms'
+        DigestMethod:
+          $ref: '#/components/schemas/CanonicalizationMethod'
+        DigestValue:
+          type: string
+      required:
+        - DigestMethod
+        - DigestValue
+        - Transforms
+      title: Reference
+    Transforms:
+      type: object
+      additionalProperties: false
+      properties:
+        Transform:
+          type: array
+          items:
+            $ref: '#/components/schemas/CanonicalizationMethod'
+      required:
+        - Transform
+      title: Transforms
+    CanonicalizationMethod:
+      type: object
+      additionalProperties: false
+      properties:
+        _Algorithm:
+          type: string
+          format: uri
+      required:
+        - _Algorithm
+      title: CanonicalizationMethod
+    EchoRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        er:AdmnEchoRequest:
+          $ref: '#/components/schemas/AdmnEchoRequest'
+      required:
+        - AdmnEchoRequest
+      title: EchoRequest -admn005
+    AdmnEchoRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        er:GrpHdr:
+          $ref: '#/components/schemas/GrpHdr'
+        er:EchoTxInf:
+          $ref: '#/components/schemas/EchoTxInf'
+      required:
+        - EchoTxInf
+        - GrpHdr
+      title: AdmnEchoRequest
+    EchoTxInf:
+      type: object
+      additionalProperties: false
+      properties:
+        er:FnctnCd:
+          $ref: '#/components/schemas/FnctnCD'
+        er:InstrId:
+          $ref: '#/components/schemas/FnctnCD'
+        er:InstgAgt:
+          $ref: '#/components/schemas/InstAgt'
+        er:InstdAgt:
+          $ref: '#/components/schemas/InstAgt'
+      required:
+        - FnctnCd
+        - InstdAgt
+        - InstgAgt
+        - InstrId
+      title: EchoTxInf
+    FnctnCD:
+      type: string
+      additionalProperties: false
+      title: FnctnCD
+    InstAgt:
+      type: object
+      additionalProperties: false
+      properties:
+        er:FinInstnId:
+          $ref: '#/components/schemas/FinInstnID'
+      required:
+        - FinInstnId
+      title: InstAgt
+    FinInstnID:
+      type: object
+      additionalProperties: false
+      properties:
+        er:BIC:
+          type: string
+      required:
+        - BIC
+      title: FinInstnID
+    GrpHdr:
+      type: object
+      additionalProperties: false
+      properties:
+        er:MsgId:
+          $ref: '#/components/schemas/FnctnCD'
+        er:CreDtTm:
+          $ref: '#/components/schemas/FnctnCD'
+      required:
+        - CreDtTm
+        - MsgId
+      title: GrpHdr
+    EchoResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        AdmnEchoResp:
+          $ref: '#/components/schemas/AdmnEchoResp'
+      required:
+        - AdmnEchoResp
+      title: EchoResponse - admn006
+    AdmnEchoResp:
+      type: object
+      additionalProperties: false
+      properties:
+        GrpHdr:
+          $ref: '#/components/schemas/GrpHdr'
+        EchoResp:
+          $ref: '#/components/schemas/EchoResp'
+      required:
+        - EchoResp
+        - GrpHdr
+      title: AdmnEchoResp
+    EchoResp:
+      type: object
+      additionalProperties: false
+      properties:
+        InstgAgt:
+          $ref: '#/components/schemas/InstAgt'
+        InstdAgt:
+          $ref: '#/components/schemas/InstAgt'
+        OrgnlInstrId:
+          type: string
+        FnctnCd:
+          type: string
+          format: integer
+        TxSts:
+          type: string
+      required:
+        - FnctnCd
+        - InstdAgt
+        - InstgAgt
+        - OrgnlInstrId
+        - TxSts
+      title: EchoResp
+    CreditTransfer:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:FIToFICstmrCdtTrf:
+          $ref: '#/components/schemas/FIToFICstmrCdtTrf'
+      required:
+        - FIToFICstmrCdtTrf
+      title: CreditTransfer -pacs008
+    FIToFICstmrCdtTrf:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:GrpHdr:
+          $ref: '#/components/schemas/CTGrpHdr'
+        ct:CdtTrfTxInf:
+          $ref: '#/components/schemas/CdtTrfTxInf'
+      required:
+        - CdtTrfTxInf
+        - GrpHdr
+      title: FIToFICstmrCdtTrf
+    CdtTrfTxInf:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:PmtId:
+          $ref: '#/components/schemas/PmtID'
+        ct:PmtTpInf:
+          $ref: '#/components/schemas/PmtTpInf'
+        ct:IntrBkSttlmAmt:
+          type: string
+        ct:ChrgBr:
+          type: string
+        ct:InstgAgt:
+          $ref: '#/components/schemas/Agt'
+        ct:InstdAgt:
+          $ref: '#/components/schemas/Agt'
+        ct:Dbtr:
+          $ref: '#/components/schemas/Dbtr'
+        ct:DbtrAcct:
+          $ref: '#/components/schemas/DbtrAcct'
+        ct:DbtrAgt:
+          $ref: '#/components/schemas/Agt'
+        ct:CdtrAgt:
+          $ref: '#/components/schemas/Agt'
+        ct:Cdtr:
+          $ref: '#/components/schemas/Cdtr'
+        ct:CdtrAcct:
+          $ref: '#/components/schemas/CdtrAcct'
+        ct:Purp:
+          $ref: '#/components/schemas/Purp'
+      required:
+        - Cdtr
+        - CdtrAcct
+        - CdtrAgt
+        - ChrgBr
+        - Dbtr
+        - DbtrAcct
+        - DbtrAgt
+        - InstdAgt
+        - InstgAgt
+        - IntrBkSttlmAmt
+        - PmtId
+        - PmtTpInf
+        - Purp
+      title: CdtTrfTxInf
+    Cdtr:
+      type: object
+      additionalProperties: false
+      properties:
+        Nm:
+          type: string
+      title: Cdtr
+    CdtrAcct:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:Id:
+          $ref: '#/components/schemas/CdtrAcctID'
+      required:
+        - Id
+      title: CdtrAcct
+    CdtrAcctID:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:Othr:
+          $ref: '#/components/schemas/Othr'
+      required:
+        - Othr
+      title: CdtrAcctID
+    Othr:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type: string
+      required:
+        - Id
+      title: Othr
+    Agt:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:FinInstnId:
+          $ref: '#/components/schemas/ctFinInstnID'
+      required:
+        - FinInstnId
+      title: Agt
+    ctFinInstnID:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:BICFI:
+          type: string
+      required:
+        - BICFI
+      title: FinInstnID
+    Dbtr:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:Nm:
+          type: string
+        ct:Id:
+          $ref: '#/components/schemas/DbtrID'
+      title: Dbtr
+    DbtrID:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:PrvtId:
+          $ref: '#/components/schemas/PrvtID'
+      required:
+        - PrvtId
+      title: DbtrID
+    PrvtID:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:DtAndPlcOfBirth:
+          $ref: '#/components/schemas/DtAndPLCOfBirth'
+      required:
+        - DtAndPlcOfBirth
+      title: PrvtID
+    DtAndPLCOfBirth:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:BirthDt:
+          type: string
+        ct:CityOfBirth:
+          type: string
+        ct:CtryOfBirth:
+          type: string
+      required:
+        - BirthDt
+        - CityOfBirth
+        - CtryOfBirth
+      title: DtAndPLCOfBirth
+    DbtrAcct:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:Id:
+          $ref: '#/components/schemas/CdtrAcctID'
+        ct:Tp:
+          $ref: '#/components/schemas/Purp'
+      required:
+        - Id
+        - Tp
+      title: DbtrAcct
+    Purp:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:Prtry:
+          type: string
+      required:
+        - Prtry
+      title: Purp
+    PmtID:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:InstrId:
+          type: string
+        ct:EndToEndId:
+          type: string
+        ct:TxId:
+          type: string
+      required:
+        - EndToEndId
+        - InstrId
+        - TxId
+        - __prefix
+      title: PmtID
+    PmtTpInf:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:SvcLvl:
+          $ref: '#/components/schemas/SVCLvl'
+        ct:LclInstrm:
+          $ref: '#/components/schemas/Purp'
+        ct:CtgyPurp:
+          $ref: '#/components/schemas/Purp'
+      required:
+        - CtgyPurp
+        - LclInstrm
+        - SvcLvl
+      title: PmtTpInf
+    SVCLvl:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:Cd:
+          type: string
+      required:
+        - Cd
+      title: SVCLvl
+    CTGrpHdr:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:MsgId:
+          type: string
+        ct:CreDtTm:
+          type: string
+        ct:NbOfTxs:
+          type: string
+        ct:TtlIntrBkSttlmAmt:
+          type: string
+        ct:IntrBkSttlmDt:
+          type: string
+        ct:SttlmInf:
+          $ref: '#/components/schemas/SttlmInf'
+      required:
+        - CreDtTm
+        - IntrBkSttlmDt
+        - MsgId
+        - NbOfTxs
+        - SttlmInf
+        - TtlIntrBkSttlmAmt
+      title: GrpHdr
+    SttlmInf:
+      type: object
+      additionalProperties: false
+      properties:
+        ct:SttlmMtd:
+          type: string
+        ct:ClrSys:
+          $ref: '#/components/schemas/SVCLvl'
+      required:
+        - ClrSys
+        - SttlmMtd
+      title: SttlmInf
+    MessageStatusReport:
+      type: object
+      additionalProperties: false
+      properties:
+        ps:FIToFIPmtStsRpt:
+          $ref: '#/components/schemas/FIToFIPmtStsRpt'
+      required:
+        - FIToFIPmtStsRpt
+      title: MessageStatusReport -pacs002
+    FIToFIPmtStsRpt:
+      type: object
+      additionalProperties: false
+      properties:
+        ps:GrpHdr:
+          $ref: '#/components/schemas/psGrpHdr'
+        ps:OrgnlGrpInfAndSts:
+          $ref: '#/components/schemas/OrgnlGrpInfAndSts'
+        ps:TxInfAndSts:
+          $ref: '#/components/schemas/TxInfAndSts'
+      required:
+        - GrpHdr
+        - OrgnlGrpInfAndSts
+        - TxInfAndSts
+      title: FIToFIPmtStsRpt
+    psGrpHdr:
+      type: object
+      additionalProperties: false
+      properties:
+        ps:MsgId:
+          type: string
+        ps:CreDtTm:
+          type: string
+      required:
+        - CreDtTm
+        - MsgId
+      title: GrpHdr
+    OrgnlGrpInfAndSts:
+      type: object
+      additionalProperties: false
+      properties:
+        ps:OrgnlMsgId:
+          type: string
+        ps:OrgnlMsgNmId:
+          type: string
+        ps:OrgnlCreDtTm:
+          type: string
+        ps:OrgnlNbOfTxs:
+          type: string
+      required:
+        - OrgnlCreDtTm
+        - OrgnlMsgId
+        - OrgnlMsgNmId
+        - OrgnlNbOfTxs
+      title: OrgnlGrpInfAndSts
+    TxInfAndSts:
+      type: object
+      additionalProperties: false
+      properties:
+        ps:OrgnlInstrId:
+          type: string
+        ps:TxSts:
+          type: string
+        ps:AccptncDtTm:
+          type: string
+        ps:InstgAgt:
+          $ref: '#/components/schemas/InstAgt'
+        ps:InstdAgt:
+          $ref: '#/components/schemas/InstAgt'
+        ps:OrgnlTxRef:
+          $ref: '#/components/schemas/OrgnlTxRef'
+      required:
+        - AccptncDtTm
+        - InstdAgt
+        - InstgAgt
+        - OrgnlInstrId
+        - OrgnlTxRef
+        - TxSts
+      title: TxInfAndSts
+    OrgnlTxRef:
+      type: object
+      additionalProperties: false
+      properties:
+        ps:IntrBkSttlmAmt:
+          type: string
+      required:
+        - IntrBkSttlmAmt
+      title: OrgnlTxRef
